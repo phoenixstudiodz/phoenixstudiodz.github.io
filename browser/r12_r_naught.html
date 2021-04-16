@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Proprietary and confidential software of ARIScience. All rights reserved. (c) 2017-2021 ARIScience -->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="R0, R Naught, Disease Spread, Outbreak Model">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>R Naught Modeling</title>
+    <!-- DataTable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!--favicon-->
+    <link rel="icon" type="image/png" href="images/ari_logo_small.png">
+
+    <!-- jQuery library - MIT license as per https://jquery.org/license/ -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- popperjs liberary - MIT license as per https://github.com/popperjs/popper-core/blob/master/LICENSE.md -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+    <!-- Latest compiled Bootstrap JavaScript under MIT license as per https://getbootstrap.com/docs/4.0/about/license/ -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-144973238-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-144973238-2');
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lcf37IZAAAAANU7C0w70ctfswDakm_1zQGu3Brg"></script>
+    <script src="javascript/captcha.js"></script>
+    <!-- DataTable -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.ariscience.org">
+                <img alt="ARI Science" src="images/ari_logo_small.png" width="50" height="30">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07"
+                aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarsExample07">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Resources</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="r12_r_naught.html">R Naught Modeling</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.ariscience.com/#comp-k9naoy9a" target="_blank">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br><br><br>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="r0-overall" class="col-form-label m-0 d-none">R<sub>0</sub>Overall</label>
+                <input type="number" class="form-control input-sm" id="r0-overall" min="0" max="100"
+                    data-toggle="tooltip" data-placement="top"
+                    title="R0 Overall: Number of people each infected person is expected to infect within the infectious time-period"
+                    placeholder="r0 Overall">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="r0-indoor" class="col-form-label d-none">R<sub>0</sub>Indoor</label>
+                <input type="number" class="form-control input-sm" id="r0-indoor" min="0" max="100"
+                    data-toggle="tooltip" data-placement="top"
+                    title="R0 Indoor: Number of people each infected person is expected to infect within the infectious time-period"
+                    placeholder="r0 Indoor">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="r0-outdoor" class="col-form-label d-none">R<sub>0</sub>Outdoor</label>
+                <input type="number" class="form-control input-sm" id="r0-outdoor" min="0" max="100"
+                    data-toggle="tooltip" data-placement="top"
+                    title="R0 Outdoor: Number of people each infected person is expected to infect within the infectious time-period"
+                    placeholder="r0 Outdoor">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="r0-congregate-transit" class="col-form-label d-none">R<sub>0</sub>Congregate Transit</label>
+                <input type="number" class="form-control input-sm" id="r0-congregate-transit" min="0" max="100"
+                    data-toggle="tooltip" data-placement="top"
+                    title="R0 Congregate Transit: Number of people each infected person is expected to infect within the infectious time-period"
+                    placeholder="r0 Congregate Transit">
+            </div>
+            <div class="d-block d-lg-none col-sm-12">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="overall-disease-transmission" class="col-form-label d-none">Overall disease
+                    transmission</label>
+                <select class="form-control mx-1" id="overall-disease-transmission" data-toggle="tooltip"
+                    data-placement="top" title="Overall disease transmission"
+                    placeholder="Overall disease transmission">
+                    <option value="-1" selected value>Overall disease transmission</option>
+                    <option value="0">airborne</option>
+                    <option value="1">fecal-oral</option>
+                    <option value="2">body fluids</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="infectious-period" class="col-form-label d-none">Infectious Period</label>
+                <input type="number" class="form-control" id="infectious-period" min="0" max="14600"
+                    data-toggle="tooltip" data-placement="top" title="Infectious Period (days)"
+                    placeholder="Infectious Period">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="incubation-period" class="col-form-label d-none">Incubation Period</label>
+                <input type="number" class="form-control" id="incubation-period" min="0" max="14600"
+                    data-toggle="tooltip" data-placement="top" title="Incubation Period (days)"
+                    placeholder="Incubation Period">
+            </div>
+            <div class="form-group col-sm-6 col-md-2 col-lg input-group-sm">
+                <label for="number-of-node-placement-simulations" class="col-form-label d-none"># of node placement
+                    simulations</label>
+                <input type="number" class="form-control" id="number-of-node-placement-simulations" min="0" value="5000"
+                    data-toggle="tooltip" data-placement="top" title="# of node placement simulations"
+                    placeholder="# of node placement simulations" onchange="updateNumberOfNodePlacementSimulations()">
+            </div>
+            <div class="form-group col-sm-12 col-md-2 col-lg input-group-sm">
+                <label for="number-of-days-to-simulate" class="col-form-label d-none"># of days to simulate</label>
+                <input type="number" class="form-control" id="number-of-days-to-simulate" min="1" max="3650" value="90"
+                    data-toggle="tooltip" data-placement="top" title="# of days to simulate"
+                    placeholder="# of days to simulate">
+            </div>
+        </div>
+        <div>
+            <div>
+                <input class="d-none" type="file" id="dot-file" name="dot-file" accept=".dot,.gv,.json"
+                    onchange="updatefile(event)">
+            </div>
+            <div class="d-flex justify-content-center flex-wrap">
+                <span type="button" class="badge mx-1 bg-primary text-body border border-primary user-select-none"
+                    onclick="newLayout()">New
+                    Layout</span>
+                <span type="button" class="badge mx-1 bg-primary text-body border border-primary user-select-none"
+                    onclick="openFileDialog()">Open Layout</span>
+                <span type="button" class="badge mx-1 bg-primary text-body border border-primary user-select-none"
+                    onclick="exportLayout()">Save Layout</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary d-none d-md-block user-select-none"
+                    onclick="openAddNode()">Add Node</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary d-none d-md-block user-select-none"
+                    onclick="createEdge()">Add Edge</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary d-none d-md-block user-select-none"
+                    onclick="optimizePlacement()">Optimize Placement</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary d-none d-md-block user-select-none"
+                    onclick="ARISimpleApproximation()">ARI</span>
+
+                <span type="button"
+                    class="badge ml-3 bg-primary text-body border border-primary mr-1 d-none d-md-block user-select-none"
+                    onclick="zoomOut()">-</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary  d-none d-md-block user-select-none"
+                    onclick="fit()">fit</span>
+                <span type="button"
+                    class="badge mx-1 bg-primary text-body border border-primary d-none d-md-block user-select-none"
+                    onclick="zoomIn()">+</span>
+
+            </div>
+            <div class="d-flex justify-content-center flex-wrap d-block d-md-none mt-1 user-select-none">
+                <span type="button" class="badge mx-1 bg-primary text-body border border-primary user-select-none"
+                    onclick="openAddNode()">Add Node</span>
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none" onclick="createEdge()">Add
+                    Edge</span>
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none"
+                    onclick="optimizePlacement()">Optimize Placement</span>
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none"
+                    onclick="ARISimpleApproximation()">ARI</span>
+
+
+            </div>
+            <div class="d-flex justify-content-center flex-wrap d-block d-md-none mt-1 user-select-none">
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none"
+                    onclick="zoomOut()">-</span>
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none" onclick="fit()">fit</span>
+                <span type="button" class="badge mx-1 bg-primary text-body user-select-none" onclick="zoomIn()">+</span>
+            </div>
+        </div>
+        <div id="graph" class="border" style="width: 100%;min-height: calc(100vh - 270px)"></div>
+        <div class="progress" id="progress-bar-container">
+            <div class="progress-bar" id="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="100">25%</div>
+        </div>
+    </div>
+    <div class="toast d-none" style="position: absolute; top: 230px; right: 10px;" data-delay="3000">
+        <div class="toast-header">
+            <strong class="mr-auto">Add Edge</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Click on a node and drag the edge to <br>another node to connect them.
+        </div>
+    </div>
+    <div class="bg-light container-fluid mt-1 d-none">
+        <div class="row justify-content-around flex-wrap">
+            <div class="m-0 p-0 col-12 col-md-6 col-lg"><strong># of nodes: </strong><span
+                    id="stats-number-of-nodes">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong>population mean: </strong><span
+                    id="stats-populationmean">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong>population std: </strong><span
+                    id="stats-population-std">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of roads: </strong><span
+                    id="stats-number-of-roads">0</span>
+            </div>
+            <div class="col-12"></div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of MT(Train): </strong><span
+                    id="stats-number-of-trains">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of MT (Subway): </strong><span
+                    id="stats-number-of-subway">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of MT (Highway): </strong><span
+                    id="stats-number-of-highway">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of Ferry: </strong><span
+                    id="stats-number-of-ferry">0</span>
+            </div>
+            <div class="col-12"></div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg"><strong># of Air: </strong><span
+                    id="stats-number-of-air">0</span>
+            </div>
+            <div class="m-0 p-0  col-12 col-md-6 col-lg-6"><strong>Rendered on: </strong><span
+                    id="stats-rendred-on">0</span> in US EST
+            </div>
+        </div>
+    </div>
+    <div class="border m-3 p-3 d-flex align-items-center justify-content-center">
+        <div id="infection-graph"></div>
+    </div>
+    <div class="border m-3 p-3">
+        <table class="cell-border compact stripe"></table>
+    </div>
+
+
+    <!-- begin footer -->
+    <footer class="footer py-1 mt-1">
+        <div class="container-fluid">
+            <span class="text-muted">
+                <small>
+                    The tools provided in this site are subject to (c) 2016-2021 ARIScience. All rights reserved. If you
+                    have any
+                    questions please <a href="https://www.ariscience.com/#comp-k9naoy9a" target="_blank">Contact Us</a>.
+                    If you want to visit our parent site <a href="https://www.ariscience.com"
+                        target="_blank">www.ariscience.com</a> please click <a href="https://www.ariscience.com"
+                        target="_blank">here</a>.
+                </small>
+            </span>
+        </div>
+    </footer>
+    <!-- end of footer -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="agreementModal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false"
+        data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title"><br>By using any of the common resources provided
+                        ("SOFTWARE") in this site you agree that:</h6>
+                </div>
+                <div class="modal-body">
+                    <h6>
+                        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+                        INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+                        AND NONINFRINGEMENT. IN NO EVENT SHALL ALAMGIR RESEARCH INC NOR IT'S OFFICERS NOR IT'S EMPLOYEES
+                        NOR
+                        IT'S CONTRACTORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+                        CONTRACT,
+                        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+                        DEALINGS IN THE SOFTWARE.
+                        FURTHERMORE THE SOFTWARE IS PROVIDED ONLY FOR NON-COMMERCIAL USE. COMMERCIAL USE IS NOT
+                        PERMITTED WITHOUT
+                        EXPLICIT WRITTEN PERMISSION OF ALAMGIR RESEARCH INC. USE OF THE SOFTWARE OUTSIDE OF THE CONTEXT
+                        OF THIS WEBSITE
+                        IS PROHIBITED. RESEARCH OR PUBLICATIONS THAT USED THIS SOFTWARE MUST ACKNOWLEDGE ARIScience IN
+                        EITHER ACKNOWLEDGEMENTS OR REFERENCES SECTION.
+                    </h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal -->
+
+    <!-- Modal Add node-->
+    <div class="modal fade" id="add-node-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add new Node</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-label" class="col-form-label">Name</label>
+                                <input type="text" class="form-control" id="create-label" placeholder="name" required>
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-node-type" class="col-form-label">Type</label>
+                                <select class="form-control" id="create-node-type">
+                                    <option value="city">city</option>
+                                    <option value="town">town</option>
+                                    <option value="suburb">suburb</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-label" class="col-form-label">Resident population in '000s</label>
+                                <input type="number" class="form-control" id="create-resident-population" min="0"
+                                    step="0.001" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-percentage-work" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population that is part of workforce">%
+                                    worker</label>
+                                <input type="number" class="form-control" id="create-percentage-work" min="0" max="100"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population that is part of workforce" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-mass-transit" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of workforce that takes mass transit">Mass
+                                    transit</label>
+                                <input type="number" min="0" class="form-control" id="create-mass-transit"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of workforce that takes mass transit" step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-individual-transit" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of workforce that takes individual transit">Individual
+                                    transit</label>
+                                <input type="number" class="form-control" id="create-individual-transit" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of workforce that takes individual transit" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-percentage-elementary-school" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Elementary School">Elementary School %</label>
+                                <input type="number" class="form-control" id="create-percentage-elementary-school"
+                                    min="0" max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Elementary School" step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-percentage-middle-school" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Middle School">Middle School %</label>
+                                <input type="number" class="form-control" id="create-percentage-middle-school" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Middle School" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-percentage-high-school" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population in High School">High School
+                                    %</label>
+                                <input type="number" class="form-control" id="create-percentage-high-school" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in High School" step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-percentage-college-plus" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population in College and above">College+
+                                    %</label>
+                                <input type="number" class="form-control" id="create-percentage-college-plus" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in College and above" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-number-of-restaurants" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="# of restaurants"># of restaurants</label>
+                                <input type="number" class="form-control" id="create-number-of-restaurants" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top" title="# of restaurants"
+                                    step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-number-of-gyms" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="# of gyms"># of gyms
+                                </label>
+                                <input type="number" class="form-control" id="create-number-of-gyms" min="0"
+                                    data-toggle="tooltip" data-placement="top" title="# of gyms" step="1" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-number-of-religious-congregate-facilities" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="# of religious congregate facilities"># of religious congregate facilities
+                                </label>
+                                <input type="number" class="form-control"
+                                    id="create-number-of-religious-congregate-facilities" min="0" data-toggle="tooltip"
+                                    data-placement="top" title="# of religious congregate facilities" step="1"
+                                    value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-number-of-other-congregate-facilities" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="# of other congregate facilities"># of other congregate facilities
+                                </label>
+                                <input type="number" class="form-control"
+                                    id="create-number-of-other-congregate-facilities" min="0" data-toggle="tooltip"
+                                    data-placement="top" title="# of other congregate facilities" step="1" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="create-number-initial-infected-on-day-0" class="col-form-label">Initial #
+                                    infected on day
+                                    0</label>
+                                <input type="number" min="0" class="form-control"
+                                    id="create-number-initial-infected-on-day-0">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addNode()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Modal Add node-->
+
+    <!-- Modal Edit node-->
+    <div class="modal fade" id="edit-node-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Node</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="edit-node-is-fixed">
+                                <label class="form-check-label" for="edit-node-is-fixed">
+                                    Fix position
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-label" class="col-form-label">Name</label>
+                                <input type="text" class="form-control" id="edit-label" placeholder="name" required>
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-node-type" class="col-form-label">Type</label>
+                                <select class="form-control" id="edit-node-type">
+                                    <option value="city">city</option>
+                                    <option value="town">town</option>
+                                    <option value="suburb">suburb</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-label" class="col-form-label">Resident population in '000s</label>
+                                <input type="number" class="form-control" id="edit-resident-population" step="0.001"
+                                    min="0" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-percentage-work" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population that is part of workforce">%
+                                    worker</label>
+                                <input type="number" class="form-control" id="edit-percentage-work" min="0" max="100"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population that is part of workforce" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-mass-transit" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of workforce that takes mass transit">Mass
+                                    transit</label>
+                                <input type="number" class="form-control" id="edit-mass-transit" data-toggle="tooltip"
+                                    data-placement="top" title="% of workforce that takes mass transit" step="0.01"
+                                    min="0" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-individual-transit" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of workforce that takes individual transit">Individual
+                                    transit</label>
+                                <input type="number" class="form-control" id="edit-individual-transit" min="0" max="100"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of workforce that takes individual transit" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-percentage-elementary-school" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Elementary School">Elementary School %</label>
+                                <input type="number" class="form-control" id="edit-percentage-elementary-school" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Elementary School" step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-percentage-middle-school" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population in Middle School">Middle School
+                                    %</label>
+                                <input type="number" class="form-control" id="edit-percentage-middle-school" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in Middle School" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-percentage-high-school" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population in High School">High School
+                                    %</label>
+                                <input type="number" class="form-control" id="edit-percentage-high-school" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in High School" step="0.01" value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-percentage-college-plus" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="% of resident population in College and above">College+
+                                    %</label>
+                                <input type="number" class="form-control" id="edit-percentage-college-plus" min="0"
+                                    max="100" data-toggle="tooltip" data-placement="top"
+                                    title="% of resident population in College and above" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-number-of-restaurants" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="# of restaurants"># of restaurants</label>
+                                <input type="number" class="form-control" id="edit-number-of-restaurants" min="0"
+                                    data-toggle="tooltip" data-placement="top" title="# of restaurants" step="1"
+                                    value="0">
+                            </div>
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-number-of-gyms" class="col-form-label" data-toggle="tooltip"
+                                    data-placement="top" title="# of gyms"># of gyms
+                                </label>
+                                <input type="number" class="form-control" id="edit-number-of-gyms" min="0"
+                                    data-toggle="tooltip" data-placement="top" title="# of gyms" step="1" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-number-of-religious-congregate-facilities" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="# of religious congregate facilities"># of religious congregate facilities
+                                </label>
+                                <input type="number" class="form-control"
+                                    id="edit-number-of-religious-congregate-facilities" min="0" data-toggle="tooltip"
+                                    data-placement="top" title="# of religious congregate facilities" step="1"
+                                    value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-number-of-other-congregate-facilities" class="col-form-label"
+                                    data-toggle="tooltip" data-placement="top"
+                                    title="# of other congregate facilities"># of other congregate facilities
+                                </label>
+                                <input type="number" class="form-control"
+                                    id="edit-number-of-other-congregate-facilities" min="0" data-toggle="tooltip"
+                                    data-placement="top" title="# of other congregate facilities" step="1" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col input-group-sm mb-0">
+                                <label for="edit-number-initial-infected-on-day-0" class="col-form-label"> Initial #
+                                    infected on day
+                                    0</label>
+                                <input type="number" min="0" class="form-control"
+                                    id="edit-number-initial-infected-on-day-0">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="openDeleteConfirmation()">Delete</button>
+                        <button type="button" class="btn btn-primary" onclick="editNode()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Modal Edit node-->
+    <!-- Modal Edit edge-->
+    <div class="modal fade" id="edit-edge-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Edge</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group  input-group-sm mb-0">
+                            <label for="edit-edge-label" class="col-form-label">Name</label>
+                            <input type="text" class="form-control" id="edit-edge-label">
+                        </div>
+                        <div class="form-group  input-group-sm mb-0">
+                            <label for="edit-edge-title" class="col-form-label">Title</label>
+                            <input type="text" class="form-control" id="edit-edge-title" required>
+                        </div>
+                        <div class="form-group  input-group-sm mb-0">
+                            <label for="edit-edge-type" class="col-form-label">Type</label>
+                            <select class="form-control" id="edit-edge-type">
+                                <option value="road">Road</option>
+                                <option value="mt-train">MT - Train</option>
+                                <option value="mt-subway">MT - Subway</option>
+                                <option value="air">Air</option>
+                                <option value="water">Water (Boat/Ferry)</option>
+                                <option value="mt-highway">MT - Highway</option>
+                            </select>
+                        </div>
+
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="openDeleteConfirmation()">Delete</button>
+                        <button type="button" class="btn btn-primary" onclick="editEdge()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Modal Edit edge-->
+    <!-- Modal Confirm-->
+    <div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false"
+        data-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Item</h5>
+                </div>
+                <div class="modal-body">
+                    <h1>Are you sure ?</h1>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" onclick="cancelDelete()">NO</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmeDelete()">YES</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Modal Confirm-->
+    <div id="debug-usage"
+        style="display:none;position:absolute;background-color: #00f4;border-radius: 10px;padding: 10px; top:10px;left:10px;z-index:10000">
+        <p>From Ever <span id="from-ever">0</span></p>
+        <p>Last week <span id="last-week">0</span></p>
+        <p>Last 24 hours <span id="last-24h">0</span></p>
+        <button onclick="resetPageUsage()">Reset</button>
+    </div>
+
+    <script src="javascript/vis-network.min.js"></script>
+    <script type="text/javascript">
+
+        edges = new vis.DataSet([]);
+        nodes = new vis.DataSet([]);
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var selectedNode = null;
+        var selectedEdge = null;
+        var selectedObjects = null;
+        var container = document.getElementById("graph");
+        var stabilizationIterations = parseInt(document.getElementById("number-of-node-placement-simulations").value);
+        stabilizationIterations = stabilizationIterations > -1 ? stabilizationIterations : 5000;
+        var options = {
+            autoResize: true,
+            height: '100%',
+            width: '100%',
+            locale: 'en',
+            clickToUse: false,
+            configure: {
+                enabled: false,
+                filter: false,
+                showButton: false,
+            },
+            edges: {
+                physics: true,
+            },
+            nodes: {
+                physics: true,
+            },
+            interaction: {
+                hover: true,
+                navigationButtons: false,
+            },
+            manipulation: {
+                enabled: false,
+                initiallyActive: false,
+                addEdge: function (edgeData, callback) {
+                    // disable connecting a node to it self
+                    edgeData.color = '#777777';
+                    if (edgeData.from !== edgeData.to) {
+                        callback(edgeData);
+                    }
+                },
+            },
+            physics: {
+                enabled: false,
+                barnesHut: {
+                    avoidOverlap: 1,
+                    // how mush force carry on from last iteration 
+                    // Higher the value less the oscilations [0, 1]
+                    damping: 0.99
+                },
+                forceAtlas2Based: {
+                    avoidOverlap: 1
+                },
+                hierarchicalRepulsion: {
+                    avoidOverlap: 1
+                },
+                stabilization: {
+                    enabled: true,
+                    iterations: stabilizationIterations,
+                    updateInterval: 25,
+                },
+            },
+            layout: {
+                randomSeed: "0.0022184356912414716:1612707087903",
+            }
+        };
+        var network = new vis.Network(container, data, options);
+        network.on("stabilized", function () {
+            hideProgressBar();
+            network.setOptions({ physics: false });
+        });
+        // Add node data confirmed (save on modal) save data in to the graph
+        function addNode() {
+            network.disableEditMode();
+            var label = document.getElementById("create-label").value;
+            var nodeType = document.getElementById("create-node-type").value;
+            var residentPopulation = parseFloat(document.getElementById("create-resident-population").value) >= 0 ? parseFloat(document.getElementById("create-resident-population").value) : -1;
+            var percentageWork = parseInt(document.getElementById("create-percentage-work").value) >= 0 ? parseInt(document.getElementById("create-percentage-work").value) : -1;
+            var massTransit = parseInt(document.getElementById("create-mass-transit").value) >= 0 ? parseInt(document.getElementById("create-mass-transit").value) : -1;
+            var individualTransit = parseInt(document.getElementById("create-individual-transit").value) >= 0 ? parseInt(document.getElementById("create-individual-transit").value) : -1;
+            var percentageElementarySchool = parseInt(document.getElementById("create-percentage-elementary-school").value) >= 0 ? percentageElementarySchool = parseInt(document.getElementById("create-percentage-elementary-school").value) : -1;
+            var percentageMiddleSchool = parseInt(document.getElementById("create-percentage-middle-school").value) >= 0 ? parseInt(document.getElementById("create-percentage-middle-school").value) : -1;
+            var percentageHighSchool = parseInt(document.getElementById("create-percentage-high-school").value) >= 0 ? parseInt(document.getElementById("create-percentage-high-school").value) : -1;
+            var percentageCollegePlus = parseInt(document.getElementById("create-percentage-college-plus").value) >= 0 ? parseInt(document.getElementById("create-percentage-college-plus").value) : -1;
+            var numberOfRestaurants = parseInt(document.getElementById("create-number-of-restaurants").value) >= 0 ? parseInt(document.getElementById("create-number-of-restaurants").value) : -1;
+            var numberOfGyms = parseInt(document.getElementById("create-number-of-gyms").value) >= 0 ? parseInt(document.getElementById("create-number-of-gyms").value) : -1;
+            var numberOfReligiousCongregateFacilities = parseInt(document.getElementById("create-number-of-religious-congregate-facilities").value) >= 0 ? parseInt(document.getElementById("create-number-of-religious-congregate-facilities").value) : -1;
+            var numberOfOtherCongregateFacilities = parseInt(document.getElementById("create-number-of-other-congregate-facilities").value) >= 0 ? parseInt(document.getElementById("create-number-of-other-congregate-facilities").value) : -1;
+            var numberInitialInfectedOnDay0 = parseInt(document.getElementById("edit-number-initial-infected-on-day-0").value) >= 0 ? parseInt(document.getElementById("edit-number-initial-infected-on-day-0").value) : -1;
+            if (!label) return;
+            var n = { id: ((new Date()).getTime()), label, infos: { nodeType, residentPopulation, percentageWork, massTransit, individualTransit, percentageElementarySchool, percentageMiddleSchool, percentageHighSchool, numberOfRestaurants, numberOfGyms, numberOfReligiousCongregateFacilities, numberOfOtherCongregateFacilities, numberInitialInfectedOnDay0, percentageCollegePlus } };
+            data.nodes.add({ ...n, title: createTitle(n) });
+            $('#add-node-modal').modal('hide');
+        }
+        //Detect double click and open a modal if 
+        //  double click on node or edge detected
+        network.on('doubleClick', function (o) {
+            selectedObjects = o;
+            if (o && o.nodes && o.nodes.length > 0) {
+                var node = data.nodes.get(o.nodes[0]);
+                selectedEdge = null;
+                selectedNode = node;
+                openEditNode();
+            }
+            else if (o && o.edges && o.edges.length > 0) {
+                var edge = data.edges.get(o.edges[0]);
+                selectedNode = null;
+                selectedEdge = edge;
+                openEditEdge();
+            }
+        });
+        // Prepare / Open Node Add modal
+        function openAddNode() {
+            document.getElementById("create-label").value = '';
+            document.getElementById("create-node-type").value = '';
+            document.getElementById("create-resident-population").value = '';
+            document.getElementById("create-percentage-work").value = '';
+            document.getElementById("create-mass-transit").value = '';
+            document.getElementById("create-individual-transit").value = '';
+            document.getElementById("create-percentage-elementary-school").value = '';
+            document.getElementById("create-percentage-middle-school").value = '';
+            document.getElementById("create-percentage-high-school").value = '';
+            document.getElementById("create-percentage-college-plus").value = '';
+            document.getElementById("create-number-of-restaurants").value = '';
+            document.getElementById("create-number-of-gyms").value = '';
+            document.getElementById("create-number-of-religious-congregate-facilities").value = '';
+            document.getElementById("create-number-of-other-congregate-facilities").value = '';
+            document.getElementById("edit-number-initial-infected-on-day-0").value = '';
+            $('#add-node-modal').modal('show');
+        }
+        // Prepare / Open Node Edit modal
+        function openEditNode() {
+            network.disableEditMode();
+            if (!selectedNode) return;
+            document.getElementById("edit-label").value = selectedNode.label;
+            document.getElementById("edit-node-type").value = selectedNode.infos ? selectedNode.infos.nodeType : '';
+            document.getElementById("edit-resident-population").value = selectedNode.infos && selectedNode.infos.residentPopulation >= 0 ? selectedNode.infos.residentPopulation : '';
+            document.getElementById("edit-percentage-work").value = selectedNode.infos && selectedNode.infos.percentageWork >= 0 ? selectedNode.infos.percentageWork : '';
+            document.getElementById("edit-mass-transit").value = selectedNode.infos && selectedNode.infos.massTransit >= 0 ? selectedNode.infos.massTransit : '';
+            document.getElementById("edit-individual-transit").value = selectedNode.infos && selectedNode.infos.individualTransit >= 0 ? selectedNode.infos.individualTransit : '';
+            document.getElementById("edit-percentage-elementary-school").value = selectedNode.infos && selectedNode.infos.percentageElementarySchool >= 0 ? selectedNode.infos.percentageElementarySchool : '';
+            document.getElementById("edit-percentage-middle-school").value = selectedNode.infos && selectedNode.infos.percentageMiddleSchool >= 0 ? selectedNode.infos.percentageMiddleSchool : '';
+            document.getElementById("edit-percentage-high-school").value = selectedNode.infos && selectedNode.infos.percentageHighSchool >= 0 ? selectedNode.infos.percentageHighSchool : '';
+            document.getElementById("edit-percentage-college-plus").value = selectedNode.infos && selectedNode.infos.percentageCollegePlus >= 0 ? selectedNode.infos.percentageCollegePlus : '';
+            document.getElementById("edit-number-of-restaurants").value = selectedNode.infos && selectedNode.infos.numberOfRestaurants >= 0 ? selectedNode.infos.numberOfRestaurants : '';
+            document.getElementById("edit-number-of-gyms").value = selectedNode.infos && selectedNode.infos.numberOfGyms >= 0 ? selectedNode.infos.numberOfGyms : '';
+            document.getElementById("edit-number-of-religious-congregate-facilities").value = selectedNode.infos && selectedNode.infos.numberOfReligiousCongregateFacilities >= 0 ? selectedNode.infos.numberOfReligiousCongregateFacilities : '';
+            document.getElementById("edit-number-of-other-congregate-facilities").value = selectedNode.infos && selectedNode.infos.numberOfReligiousCongregateFacilities >= 0 ? selectedNode.infos.numberOfReligiousCongregateFacilities : '';
+            document.getElementById("edit-number-initial-infected-on-day-0").value = selectedNode.infos && selectedNode.infos.numberInitialInfectedOnDay0 >= 0 ? selectedNode.infos.numberInitialInfectedOnDay0 : '';
+            document.getElementById("edit-node-is-fixed").checked = selectedNode.fixed && selectedNode.fixed.x == true && selectedNode.fixed.y == true;
+            $('#edit-node-modal').modal('show');
+        }
+        // Prepare / Open Edge Edit modal
+        function openEditEdge() {
+            if (!selectedEdge) return;
+            document.getElementById("edit-edge-label").value = selectedEdge.label || '';
+            document.getElementById("edit-edge-title").value = selectedEdge.title || '';
+            document.getElementById("edit-edge-type").value = selectedEdge.infos ? selectedEdge.infos.edgeType : '';
+            $('#edit-edge-modal').modal('show');
+        }
+        // Edit Node Confirmed Save new Settings
+        function editNode() {
+            if (!selectedNode) return
+            var label = document.getElementById("edit-label").value;
+            var nodeType = document.getElementById("edit-node-type").value;
+            var residentPopulation = parseFloat(document.getElementById("edit-resident-population").value) >= 0 ? parseFloat(document.getElementById("edit-resident-population").value) : -1;
+            var percentageWork = parseInt(document.getElementById("edit-percentage-work").value) >= 0 ? parseInt(document.getElementById("edit-percentage-work").value) : -1;
+            var massTransit = parseInt(document.getElementById("edit-mass-transit").value) >= 0 ? parseInt(document.getElementById("edit-mass-transit").value) : -1;
+            var individualTransit = parseInt(document.getElementById("edit-individual-transit").value) >= 0 ? parseInt(document.getElementById("edit-individual-transit").value) : -1;
+            var percentageElementarySchool = parseInt(document.getElementById("edit-percentage-elementary-school").value) >= 0 ? parseInt(document.getElementById("edit-percentage-elementary-school").value) : -1;
+            var percentageMiddleSchool = parseInt(document.getElementById("edit-percentage-middle-school").value) >= 0 ? parseInt(document.getElementById("edit-percentage-middle-school").value) : -1;
+            var percentageHighSchool = parseInt(document.getElementById("edit-percentage-high-school").value) >= 0 ? parseInt(document.getElementById("edit-percentage-high-school").value) : -1;
+            var percentageCollegePlus = parseInt(document.getElementById("edit-percentage-college-plus").value) >= 0 ? parseInt(document.getElementById("edit-percentage-college-plus").value) : -1;
+            var numberOfRestaurants = parseInt(document.getElementById("edit-number-of-restaurants").value) >= 0 ? parseInt(document.getElementById("edit-number-of-restaurants").value) : -1;
+            var numberOfGyms = parseInt(document.getElementById("edit-number-of-gyms").value) >= 0 ? parseInt(document.getElementById("edit-number-of-gyms").value) : -1;
+            var numberOfReligiousCongregateFacilities = parseInt(document.getElementById("edit-number-of-religious-congregate-facilities").value) >= 0 ? parseInt(document.getElementById("edit-number-of-religious-congregate-facilities").value) : -1;
+            var numberOfOtherCongregateFacilities = parseInt(document.getElementById("edit-number-of-other-congregate-facilities").value) >= 0 ? parseInt(document.getElementById("edit-number-of-other-congregate-facilities").value) : -1;
+            var numberInitialInfectedOnDay0 = parseInt(document.getElementById("edit-number-initial-infected-on-day-0").value) >= 0 ? parseInt(document.getElementById("edit-number-initial-infected-on-day-0").value) : -1;
+            var fixed = document.getElementById("edit-node-is-fixed").checked == true ? ({ x: true, y: true }) : ({ x: false, y: false });
+            var pinned = document.getElementById("edit-node-is-fixed").checked == true;
+            if (!label) return;
+            var n = { id: selectedNode.id, fixed, label, infos: { nodeType, residentPopulation, percentageWork, massTransit, individualTransit, percentageElementarySchool, percentageMiddleSchool, percentageHighSchool, numberOfRestaurants, numberOfGyms, numberOfReligiousCongregateFacilities, numberOfOtherCongregateFacilities, numberInitialInfectedOnDay0, pinned } };
+            data.nodes.update({ ...n, title: createTitle(n) });
+            $('#edit-node-modal').modal('hide');
+
+        }
+        // Edit Edge Confirmed Save new Settings
+        function editEdge() {
+            if (!selectedEdge) return
+            var label = document.getElementById("edit-edge-label").value;
+            var title = document.getElementById("edit-edge-title").value;
+            var edgeType = document.getElementById("edit-edge-type").value;
+            var color = "#a9a9a9";
+            switch (edgeType) {
+                case 'road':
+                    color = "#777777";
+                    break;
+                case 'mt-train':
+                    color = "#ff0000";
+                    break;
+                case 'mt-subway':
+                    color = "#00ff00";
+                    break;
+                case 'air':
+                    color = "#87ceeb";
+                    break;
+                case 'water':
+                    color = "#0000ff";
+                    break;
+                case 'mt-highway':
+                    color = "#ff8c00";
+            }
+            var e = { id: selectedEdge.id, label, title, color }
+            data.edges.update({ ...e, infos: { edgeType } });
+            $('#edit-edge-modal').modal('hide');
+        }
+        // Create Edge
+        function createEdge() {
+            $('.toast').removeClass("d-none");
+            $('.toast').toast('show');
+            setTimeout(() => {
+                $('.toast').addClass("d-none");
+            }, 2000);
+            network.addEdgeMode();
+        }
+        // open delete confirmation 
+        // close modal
+        function openDeleteConfirmation() {
+            $('#edit-node-modal').modal('hide');
+            $('#edit-edge-modal').modal('hide');
+            $('#confirm-modal').modal('show');
+        }
+        // close modal, reset callback, delete item
+        function cancelDelete() {
+            selectedEdge = null;
+            selectedNode = null;
+            $('#confirm-modal').modal('hide');
+        }
+        function confirmeDelete() {
+            if (selectedObjects) {
+                if (selectedObjects.nodes) {
+                    selectedObjects.nodes.forEach(el => data.nodes.remove(el));
+                }
+                if (selectedObjects.edges) {
+                    selectedObjects.edges.forEach(el => data.edges.remove(el));
+                }
+            }
+            $('#confirm-modal').modal('hide');
+        }
+        /* Controle Zoom */
+        // Fit to screen
+        function fit() {
+            network.disableEditMode();
+            network.fit();
+        }
+        // zoom out
+        function zoomOut() {
+            network.disableEditMode();
+            network.moveTo({ scale: network.getScale() / 1.1 });
+        }
+        // zoom in
+        function zoomIn() {
+            network.disableEditMode();
+            network.moveTo({ scale: network.getScale() / 0.9 });
+        }
+        // adjust canvas size
+        function adjustCanvas() {
+            network.setOptions({ height: `${document.querySelector("#graph").clientHeight}px` })
+        }
+        window.onload = () => {
+            //$('#agreementModal').modal('show');
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+                $('.badge').css('user-select', 'none');
+            });
+            loadDefaultExample();
+            adjustCanvas();
+            resetAdjustLayoutEvents();
+            updateStats();
+        }
+        function resetAdjustLayoutEvents() {
+            data.nodes.off('add', updateStats);
+            data.nodes.off('remove', updateStats);
+            data.nodes.off('update', updateStats);
+            data.edges.off('add', updateStats);
+            data.edges.off('remove', updateStats);
+            data.edges.on('update', updateStats);
+            data.nodes.on('add', updateStats);
+            data.nodes.on('remove', updateStats);
+            data.nodes.on('update', updateStats);
+            data.edges.on('add', updateStats);
+            data.edges.on('remove', updateStats);
+            data.edges.on('update', updateStats);
+            updateStats();
+        }
+
+        // load data from file 
+        function updatefile(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var fileName = event.target.files[0].name;
+                if (fileName.toLowerCase().endsWith('gv') || fileName.toLowerCase().endsWith('dot')) {
+                    importFromDOTFile(reader.result);
+                }
+                if (fileName.toLowerCase().endsWith('json')) {
+                    importFromJSONFile(reader.result);
+                }
+                if (!fileName.toLowerCase().endsWith('gv') &&
+                    !fileName.toLowerCase().endsWith('dot') &&
+                    !fileName.toLowerCase().endsWith('json')
+                ) {
+                    alert("Error File format isn't supported");
+                }
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+        function openFileDialog() {
+            network.disableEditMode();
+            document.querySelector("#dot-file").click();
+        }
+        function exportLayout() {
+            var r0Overall = parseFloat(document.getElementById("r0-overall").value) >= 0 ? parseFloat(document.getElementById("r0-overall").value) : -1;
+            var r0Indoor = parseFloat(document.getElementById("r0-indoor").value) >= 0 ? parseFloat(document.getElementById("r0-indoor").value) : -1;
+            var r0Outdoor = parseFloat(document.getElementById("r0-outdoor").value) >= 0 ? parseFloat(document.getElementById("r0-outdoor").value) : -1;
+            var r0CongregateTransit = parseFloat(document.getElementById("r0-congregate-transit").value) >= 0 ? parseFloat(document.getElementById("r0-congregate-transit").value) : -1;
+            var infectiousPeriod = parseFloat(document.getElementById("infectious-period").value) >= 0 ? parseFloat(document.getElementById("infectious-period").value) : -1;
+            var incubationPeriod = parseFloat(document.getElementById("incubation-period").value) >= 0 ? parseFloat(document.getElementById("incubation-period").value) : -1;
+            var overallDiseaseTransmission = parseFloat(document.getElementById("overall-disease-transmission").value) >= 0 ? parseFloat(document.getElementById("overall-disease-transmission").value) : -1;
+            network.disableEditMode();
+            network.storePositions();
+            var dataExport = { nodes: [], edges: [], globals: { r0Overall, r0Indoor, r0Outdoor, r0CongregateTransit, infectiousPeriod, incubationPeriod, overallDiseaseTransmission } };
+            var ids = data.nodes.getIds();
+            ids.forEach(id => dataExport.nodes.push(data.nodes.get(id)));
+            ids = data.edges.getIds();
+            ids.forEach(id => dataExport.edges.push(data.edges.get(id)));
+            dataExport.nodes = dataExport.nodes.map(node => {
+                delete node.title;
+                return node;
+            })
+            const blob = new Blob([JSON.stringify(dataExport)], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            var fileName = 'ari_r0_';
+            for (var i = 0; i < 6; i++) {
+                fileName += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random() * 36));
+            }
+            a.download = `${fileName}.json`;
+            a.click();
+        }
+        window.onresize = adjustCanvas;
+        function importFromDOTFile(DOTstring) {
+            document.getElementById("r0").value = 0;
+            document.getElementById("infectious-period").value = 0;
+            document.getElementById("overall-disease-transmission").value = 0;
+            network.disableEditMode();
+            // provide data in the DOT language
+            var g = vis.parseDOTNetwork(DOTstring);
+            var nodes = new vis.DataSet(g.nodes);
+            var edges = new vis.DataSet(g.edges);
+            data = {
+                nodes: nodes,
+                edges: edges
+            };
+            // create a network
+            selectedNode = null;
+            selectedEdge = null;
+            selectedObjects = null;
+            network.setData(data);
+            adjustCanvas();
+            resetAdjustLayoutEvents();
+        }
+        function importFromJSONFile(jsonFileData) {
+            network.disableEditMode();
+            var g = JSON.parse(jsonFileData);
+            // stats for large files
+            var mean = 0;
+            g.nodes.forEach(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    mean += node.infos.residentPopulation;
+                }
+            });
+            mean = mean / g.nodes.length;
+            var std = 0
+            data.nodes.forEach(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    std += Math.pow((node.infos.residentPopulation - mean), 2);
+                }
+            });
+            std = Math.sqrt(std / g.nodes.length);
+            g.nodes = g.nodes.map(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    if (node.infos.residentPopulation > std * 2 && node.borderWidth != 5) {
+                        node = { ...node, borderWidth: 5 };
+                    }
+                    else if (node.infos.residentPopulation <= std * 2 && node.borderWidth != 1) {
+                        node = { ...node, borderWidth: 1 };
+                    }
+                }
+                return node;
+            });
+            g.nodes = g.nodes.map(node => ({ ...node, title: createTitle(node) }));
+            var nodes = new vis.DataSet(g.nodes);
+            var edges = new vis.DataSet(g.edges);
+            document.getElementById("r0-overall").value = (g.globals && parseFloat(g.globals.r0Overall) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("r0-indoor").value = (g.globals && parseFloat(g.globals.r0Indoor) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("r0-outdoor").value = (g.globals && parseFloat(g.globals.r0Outdoor) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("r0-congregate-transit").value = (g.globals && parseFloat(g.globals.r0CongregateTransit) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("infectious-period").value = (g.globals && parseFloat(g.globals.infectiousPeriod) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("incubation-period").value = (g.globals && parseFloat(g.globals.incubationPeriod) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+            document.getElementById("overall-disease-transmission").value = (g.globals && parseFloat(g.globals.overallDiseaseTransmission) >= 0) ? parseFloat(g.globals.r0Overall) : '';
+
+            data = {
+                nodes: nodes,
+                edges: edges
+            };
+            selectedNode = null;
+            selectedEdge = null;
+            selectedObjects = null;
+            network.setData(data);
+            adjustCanvas();
+            resetAdjustLayoutEvents();
+        }
+        function newLayout() {
+            document.getElementById("r0-overall").value = '';
+            document.getElementById("r0-indoor").value = '';
+            document.getElementById("r0-outdoor").value = '';
+            document.getElementById("r0-congregate-transit").value = '';
+            document.getElementById("infectious-period").value = '';
+            document.getElementById("overall-disease-transmission").value = '';
+            network.disableEditMode();
+            var nodes = new vis.DataSet([]);
+            var edges = new vis.DataSet([]);
+            data = {
+                nodes: nodes,
+                edges: edges
+            };
+            // create a network
+            selectedNode = null;
+            selectedEdge = null;
+            selectedObjects = null;
+            network.setData(data);
+            adjustCanvas();
+            resetAdjustLayoutEvents();
+        }
+        function updateNumberOfNodePlacementSimulations() {
+            stabilizationIterations = parseInt(document.getElementById("number-of-node-placement-simulations").value);
+            stabilizationIterations = stabilizationIterations > -1 ? stabilizationIterations : 5000;
+            network.setOptions({
+                physics: {
+                    stabilization: {
+                        iterations: stabilizationIterations
+                    }
+                }
+            });
+        }
+        function updateStats() {
+            var nNodes = data.nodes.length;
+            if (nNodes === 0) {
+                $("#stats-number-of-nodes").text(0);
+                $("#stats-populationmean").text(0);
+                $("#stats-population-std").text(0);
+                $("#stats-number-of-roads").text(0);
+                $("#stats-number-of-trains").text(0);
+                $("#stats-number-of-subway").text(0);
+                $("#stats-number-of-air").text(0);
+                $("#stats-number-of-ferry").text(0);
+                $("#stats-rendred-on").text(new Date().toLocaleString("en-US", { timeZone: 'America/New_York' }));
+                return;
+            }
+            var nRoad = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'road';
+                }
+            }).length;
+            var nTrain = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'mt-train';
+                }
+            }).length;
+            var nSubway = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'mt-subway';
+                }
+            }).length;
+            var nAir = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'air';
+                }
+            }).length;
+            var nWater = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'water';
+                }
+            }).length;
+            var nHighway = data.edges.get({
+                filter: function (edge) {
+                    return edge.infos && edge.infos.edgeType == 'mt-highway';
+                }
+            }).length;
+            var mean = 0;
+            data.nodes.forEach(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    mean += node.infos.residentPopulation;
+                }
+            });
+            mean = mean / nNodes;
+            var std = 0
+            data.nodes.forEach(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    std += Math.pow((node.infos.residentPopulation - mean), 2);
+                }
+            });
+            std = Math.sqrt(std / nNodes);
+            $("#stats-number-of-nodes").text(nNodes);
+            $("#stats-populationmean").text(mean.toFixed(3));
+            $("#stats-population-std").text(std.toFixed(3));
+            $("#stats-number-of-roads").text(nRoad);
+            $("#stats-number-of-trains").text(nTrain);
+            $("#stats-number-of-subway").text(nSubway);
+            $("#stats-number-of-highway").text(nHighway);
+            $("#stats-number-of-air").text(nAir);
+            $("#stats-number-of-ferry").text(nWater);
+            $("#stats-rendred-on").text(new Date().toLocaleString("en-US", { timeZone: 'America/New_York' }));
+            // reeltime update for borderWidth (population > 2 STD)
+            //disable update to avoid infinite loop when updating
+            data.nodes.off('update', updateStats);
+            data.nodes.forEach(node => {
+                if (node.infos && node.infos.residentPopulation) {
+                    var n = data.nodes.get(node.id);
+                    if (node.infos.residentPopulation > std * 2 && n.borderWidth != 5) {
+                        data.nodes.update({ ...n, borderWidth: 5 });
+                    }
+                    else if (node.infos.residentPopulation <= std * 2 && n.borderWidth == 5) {
+                        data.nodes.update({ ...n, borderWidth: 1 });
+                    }
+                }
+            });
+            data.nodes.on('update', updateStats);
+        }
+
+        network.on("stabilizationProgress", updateProgressBar);
+        network.on("stabilizationIterationsDone", hideProgressBar);
+
+        function hideProgressBar() {
+            $("#progress-bar-container").addClass("invisible");
+            $("#progress-bar").attr("aria-valuenow", 0);
+            $("#progress-bar").css("width", 0);
+            $("#progress-bar").text('');
+        }
+
+        function updateProgressBar(progress) {
+            $("#progress-bar-container").removeClass("invisible");
+            $("#progress-bar").attr("aria-valuenow", Math.round(Math.min((100 * progress.iterations) / progress.total, 100)));
+            $("#progress-bar").css("width", `${Math.round(Math.min((100 * progress.iterations) / progress.total, 100))}%`);
+            $("#progress-bar").text(`${Math.round(Math.min((100 * progress.iterations) / progress.total, 100))}%`);
+        }
+        function loadDefaultExample() {
+            fetch("https://www.ariscience.org/data/r12_rnaught/ma_example.json")
+                .then(res => res.json())
+                .then(res => {
+                    var nodes = res.nodes;
+                    var edges = res.edges;
+                    nodes = nodes.map(node => ({ ...node, title: createTitle(node) }));
+                    nodes = new vis.DataSet(nodes);
+                    edges = new vis.DataSet(edges);
+                    data = {
+                        nodes: nodes,
+                        edges: edges
+                    };
+                    selectedNode = null;
+                    selectedEdge = null;
+                    selectedObjects = null;
+                    network.setData(data);
+                    network.stabilize();
+                    adjustCanvas();
+                    resetAdjustLayoutEvents();
+                });
+        }
+        function createTitle(node) {
+            var nodeType = node.infos && node.infos.nodeType ? node.infos.nodeType : '';
+            var residentPopulation = node.infos && node.infos.residentPopulation >= 0 ? node.infos.residentPopulation : '';
+            var percentageWork = node.infos && node.infos.percentageWork >= 0 ? `${node.infos.percentageWork}%` : '';
+            var massTransit = node.infos && node.infos.massTransit >= 0 ? `${node.infos.massTransit}%` : '';
+            var individualTransit = node.infos && node.infos.individualTransit >= 0 ? `${node.infos.individualTransit}%` : '';
+            var percentageElementarySchool = node.infos && node.infos.percentageElementarySchool >= 0 ? `${node.infos.percentageElementarySchool}%` : '';
+            var percentageMiddleSchool = node.infos && node.infos.percentageMiddleSchool >= 0 ? `${node.infos.percentageMiddleSchool}%` : '';
+            var percentageHighSchool = node.infos && node.infos.percentageHighSchool >= 0 ? `${node.infos.percentageHighSchool}%` : '';
+            var percentageCollegePlus = node.infos && node.infos.percentageCollegePlus >= 0 ? `${node.infos.percentageCollegePlus}%` : '';
+            var numberOfRestaurants = node.infos && node.infos.numberOfRestaurants >= 0 ? node.infos.numberOfRestaurants : '';
+            var numberOfGyms = node.infos && node.infos.numberOfGyms >= 0 ? node.infos.numberOfGyms : '';
+            var numberOfReligiousCongregateFacilities = node.infos && node.infos.numberOfReligiousCongregateFacilities >= 0 ? node.infos.numberOfReligiousCongregateFacilities : '';
+            var numberOfOtherCongregateFacilities = node.infos && node.infos.numberOfOtherCongregateFacilities >= 0 ? node.infos.numberOfOtherCongregateFacilities : '';
+            var numberInitialInfectedOnDay0 = node.infos && node.infos.numberInitialInfectedOnDay0 >= 0 ? node.infos.numberInitialInfectedOnDay0 : '';
+            var title = `Name: ${node.label}\nType: ${nodeType}\nPopulation: ${residentPopulation}k\nWork: ${percentageWork}\nMass transit: ${massTransit}\nIndividual Transit: ${individualTransit}\nElementary School: ${percentageElementarySchool}\nMiddle School: ${percentageMiddleSchool}\nHigh School:${percentageHighSchool}\nCollege+:${percentageCollegePlus}\n# of restaurants:${numberOfRestaurants}\n# of gyms:${numberOfGyms}\n# of religious congregate facilities:${numberOfReligiousCongregateFacilities}\n# of other congregate facilities:${numberOfOtherCongregateFacilities}\nInitial # infected on day 0:${numberInitialInfectedOnDay0}`;
+            return title;
+        }
+        function optimizePlacement() {
+            network.stabilize();
+        }
+        function ARISimpleApproximation() {
+            // can be replaced by Math.round(incubation_period);
+            var totalInfectedOnDayN = [];
+            var incubationPeriod = $("#incubation-period").val();
+            var infectiousPeriod = $("#infectious-period").val();
+            // should node that has no "residentPopulation" field be ignored ? become 0 ...
+            var N = $("#number-of-days-to-simulate").val();
+            var R0Overall = $("#r0-overall").val();
+            var edges = data.nodes.getIds()
+                .map(id => data.edges.get(id));
+            var vertices = data.nodes.getIds()
+                .map(id => data.nodes.get(id))
+                .sort((a, b) => b.infos.residentPopulation - a.infos.residentPopulation)
+                .map(el => {
+                    el.infos.residentPopulation = el.infos.residentPopulation * 1000;
+                    return el;
+                });
+            var M = Math.floor(incubationPeriod / 2) + Math.ceil(infectiousPeriod / 2);
+            // For each day N where N = 0 to # of days to simulate
+            // we can't start from 0 (i = 0) here (because of total_infected_on_day_(N-1))
+
+            for (var n = 1; n < N; n++) {
+                vertices.forEach(vertex => {
+                    var uninfectedPool = vertex.infos.residentPopulation - (vertex.infos.residentPopulation.totalInfectedOnDay[n] + vertex.infos.residentPopulation.totalInfectedOnDay[n - 1]);
+                    var L = 4; //place holder
+                    if (L > M && L >= 1 && vertex.infos.residentPopulation.totalInfectedOnDay.length >= L) {
+                        var peopleWhoCanInfect = vertex.infos.residentPopulation.totalInfectedOnDay[L] - vertex.infos.residentPopulation.totalInfectedOnDay[L - 1];
+                        var connectedVertices = edges.filter(el => el.from == vertex.id || el.to == vertex.id);
+                        var scaler1 = connectedVertices.length > 0 ? 0.5 : 1;
+                        var scaler2 = 1 / connectedVertices.length;
+                        var deltaInfected = Math.min(uninfectedPool, R0Overall * scaler1 * peopleWhoCanInfect);
+                        //people in the current vertex and linked vertices
+                        totalInfectedOnDayN[vertex.id] = deltaInfected + vertex.infos.residentPopulation.totalInfectedOnDay[n - 1] + vertex.infos.residentPopulation.totalInfectedOnDay[n];
+                        // get the other vertices
+                        var otherVertex = connectedVertices.map(el => el.from == vertex.id ? el.to : el.from)
+                            .map(id => data.nodes.get(id));
+                        otherVertex.forEach(ov => {
+                            var uninfectedPoolOther = otherVertex.infos.residentPopulation - (otherVertex.infos.residentPopulation.totalInfectedOnDay[n] + otherVertex.infos.residentPopulation.totalInfectedOnDay[n - 1]);
+                            var deltaInfected = Math.min(uninfectedPoolOther, R0Overall * scaler1 * scaler2 * peopleWhoCanInfect);
+                            totalInfectedOnDay[n] = deltaInfected + residentPopulation.totalInfectedOnDay[n - 1] + residentPopulation.totalInfectedOnDay[n];
+                        })
+                    }
+                })
+            }
+        }
+        function plot() {
+            // place holder table and graphs
+            var nodesInfectedByday = [];
+            for (var i = 0; i < 5; i++) {
+                var totalInfectedOnDay = [];
+                for (var j = 0; j < 5; j++) totalInfectedOnDay.push(Math.round(Math.random() * 100));
+                nodesInfectedByday.push(totalInfectedOnDay);
+            }
+            var columns = nodesInfectedByday[0].map((el, index) => ({ title: `Day${index}` }))
+            var table = $('table').DataTable({
+                data: nodesInfectedByday,
+                columns
+            });
+            var xAxis = nodesInfectedByday[0].map((el, index) => index);
+            var data = nodesInfectedByday.map((el, index) => {
+                return {
+                    x: xAxis,
+                    y: el,
+                    name: `Town Name ${index}`,
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                };
+            });
+            var layout = {
+                title: `infections`,
+                showlegend: true,
+                legend: {
+                    x: 1,
+                    y: 1
+                },
+                hoverlabel: {
+                    align: 'left',
+                },
+                xaxis: {
+                    title: {
+                        text: 'days',
+                        font: {
+                            family: 'Courier New, monospace',
+                            size: 18,
+                            color: '#7f7f7f'
+                        }
+                    },
+                },
+                yaxis: {
+                    title: {
+                        text: 'Infected by day',
+                        font: {
+                            family: 'Courier New, monospace',
+                            size: 18,
+                            color: '#7f7f7f'
+                        }
+                    }
+                }
+            };
+            var config = {
+                scrollZoom: false,
+                editable: false,
+                displaylogo: false,
+                responsive: true,
+                displayModeBar: false
+            }
+            Plotly.newPlot("infection-graph", data, layout, config);
+
+        }
+        plot();
+    </script>
+</body>
+
+</html>
